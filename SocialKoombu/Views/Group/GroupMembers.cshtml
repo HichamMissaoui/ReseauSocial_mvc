@@ -1,0 +1,70 @@
+﻿@model Koombu.Bll.ViewModel.GroupUsersVm
+
+@{
+	ViewBag.Title = "Group Members";
+}
+
+
+
+<section>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8">
+				<div class="members">
+					<h1 class="page-header" align="center">@Model.Group.GroupName - Members</h1>
+					@foreach (var user in Model.GroupMembersObjects)
+					{
+						if (!user.UserId.ToString().Equals(Session["UserId"].ToString()))
+						{
+							<div class="row member-row">
+								<div class="col-md-3">
+									<a href='@Url.Action("Profil", "Home",new { id=@user.UserId})'><img src="@Url.Content(user.UserPicture)" class="img-thumbnail" alt=""></a>
+									<div class="text-center">
+										@user.UserFirstName @user.UserLastName
+									</div>
+								</div>
+								<div class="col-md-1">
+									<p><a href="#"><i></i></a></p>
+								</div>
+								<div class="col-md-1">
+									<p><a href="#"><i></i></a></p>
+								</div>
+								@if (!Model.GroupMembersId.Contains(user.UserId))
+								{
+									<div class="col-md-3">
+										<p><a href='@Url.Action("AddUser", "Group",new { groupId=Model.Group.Id,userId=@user.UserId})' class="btn btn-success btn-block"><i class="fa fa-users"></i> Add to group</a></p>
+									</div>
+								}
+
+
+								@if (Model.GroupMembersId.Contains(user.UserId))
+								{
+									<div class="col-md-3">
+										<p><a href='@Url.Action("DeleteUser", "Group",new { groupId=Model.Group.Id,userId=@user.UserId})' class="btn btn-primary btn-block"><i class="fa fa-edit"></i> Delete from group</a></p>
+									</div>
+								}
+
+								<div class="col-md-1">
+									<p><a href="#"><i></i></a></p>
+								</div>
+
+							</div>
+						}
+
+					}
+
+				</div>
+			</div>
+			<div class="col-md-4">
+				
+
+			</div>
+		</div>
+	</div>
+</section>
+
+
+
+
+
+

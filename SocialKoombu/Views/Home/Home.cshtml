@@ -1,0 +1,233 @@
+﻿@model Koombu.Bll.ViewModel.HomeVm
+@{
+    ViewBag.Title = "Home";
+}
+
+<section>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Wall </h3>
+					</div>
+					<div class="panel-body">
+						@using (Html.BeginForm("CreatePost", "Post", FormMethod.Post, new { enctype = "multipart/form-data" }))
+						{
+							<input type="hidden" name="groupId" value="0"/>
+							<div class="form-group">
+								<textarea class="form-control" placeholder="Write on the wall" name="content"></textarea>
+							</div>
+							<button type="submit" class="btn btn-default">Submit</button>
+							<div class="pull-right">
+								<div class="btn-toolbar">
+									<center><a class="btn btn-primary" id="btn-Follow" onclick="document.getElementById('pic').click();">Add picture</a></center>
+
+									<div class="form-group">
+										<input type="file" style="display:none;" id="pic" name="picture" />
+									</div>
+
+
+
+								</div>
+								<div class="btn-toolbar">
+									<center><a class="btn btn-primary" id="btn-Follow" onclick="document.getElementById('attach').click();">Add  attachement</a></center>
+
+									<div class="form-group">
+										<input type="file" style="display:none;" id="attach" name="attachement" />
+									</div>
+
+
+
+								</div>
+								
+							</div>
+						}
+					</div>
+				</div>
+
+
+				
+
+
+				@if (Model.UserPostList != null)
+	{
+		foreach (var post in Model.UserPostList.Reverse())
+		{
+			<div class="panel panel-default post">
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-2">
+							<a href='@Url.Action("Profil", "User", new {id = @post.PostOwnerId})' class="post-avatar thumbnail" >
+		@if (post.PostOwner.ProfilPicture != null)
+					{
+						<img src="@Url.Content(post.PostOwner.ProfilPicture)" alt="">
+		}
+		else
+		{
+			<img src="~/Content/images/user.png" alt="">
+}
+
+								<div class="text-center">@post.PostOwner.FirstName @post.PostOwner.LastName</div>
+
+							</a>
+							<div class="likes text-center">
+								
+								
+					
+						<span>@post.Likes Likes</span>
+		
+
+							</div>
+						</div>
+						<div class="col-sm-10">
+							@if (post.PictureUrl != null)
+				{
+					<div>
+						<img src="@Url.Content(post.PictureUrl)" class="postPicture" style="max-width:600px"><br />
+					</div>
+	}
+
+							<div class="bubble">
+								<div class="pointer">
+									<p>@post.Content</p>
+								</div>
+								<div class="pointer-border"></div>
+							</div>
+							<p class="post-actions">
+								<a href='@Url.Action("Like", "Post", new {id = @post.Id,groupId=0})'> Like </a> | <a href='@Url.Action("Unlike", "Post", new {id = @post.Id,groupId=0})'> Unlike </a> @post.PostDate |
+								@if (post.AttachementUrl != null)
+					{
+								<a href="@Url.Content(post.AttachementUrl)" download="@post.AttachementName"><img src="~/Content/images/file.png" atl="Attachement">@post.AttachementName</a>
+		}
+							</p>
+							<div class="comment-form">
+								@using (Html.BeginForm("Comment", "Post"))
+					{
+								<div class="form-group">
+									<input type="text" class="form-control" name="commentContent" placeholder="enter comment" required>
+									@Html.Hidden("postId", @post.Id)
+									@Html.Hidden("groupId", 0)
+
+								</div>
+
+						<button type="submit" class="btn btn-default">Add</button>
+		}
+							</div>
+
+							<div class="clearfix"></div>
+
+							<div class="comments">
+								@foreach (var comment in post.CommentsList)
+									{
+										<div class="comment">
+											<a href="@Url.Action("Profil", "Home", new {id = @comment.OwnerId})" class="comment-avatar pull-left">
+												
+												@if (comment.Owner.ProfilPicture != null)
+												{
+													<img src="@Url.Content(comment.Owner.ProfilPicture)" alt="">
+												}
+												else
+												{
+													<img src="~/Content/images/user.png" alt="">
+												}
+											</a>
+											<div class="comment-text">
+												<p><a href="@Url.Action("Profil", "Home", new {id = @comment.OwnerId})" class="comment-avatar pull-left" style="padding-right: 5px"><b>@comment.Owner.FirstName @comment.Owner.LastName </b></a> | @comment.Date<br />@comment.Content</p>
+
+												@if (@Model.UserConnected.UserId == comment.Owner.UserId || @Model.UserConnected.UserId == post.PostOwner.UserId)
+									{
+										<p class="post-actions"><a href='@Url.Action("RemoveComment", "Post", new {commentId = @comment.Id,groupId=0})' id="remove"><img src="~/Content/images/trash.png"></a></p>
+						}
+											</div>
+										</div>
+						}
+								<div class="clearfix"></div>
+
+								<div class="clearfix"></div>
+
+							</div>
+
+						</div>
+						@if (@Model.UserConnected.UserId == post.PostOwnerId)
+			{
+				using (Html.BeginForm("RemovePost", "Post"))
+				{
+					@Html.Hidden("postOwnerId", @post.PostOwnerId)
+					@Html.Hidden("postId", @post.Id)
+					@Html.Hidden("groupId", 0)
+					<button type="submit" class="btn btn-danger" id="deletePost">Delete Post</button>
+	}
+}
+
+					</div>
+
+					<div><br /><br /></div>
+				</div>
+			</div>
+
+}
+
+}
+
+
+
+
+
+
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-default friends">
+					<div class="panel-heading">
+						<h3 class="panel-title">Followed users</h3>
+					</div>
+					<div class="panel-body">
+						<ul>
+							@foreach (var user in Model.FollowedUsersObjects.Take(9))
+						{
+							<li><a href='@Url.Action("Profil", "User", new {id = @user.UserId})' class="thumbnail">
+								
+								@if (user.ProfilPicture != null)
+								{
+									<img src="@Url.Content(user.ProfilPicture)" alt="@user.FirstName @user.LastName">
+								}
+								else
+								{
+									<img src="~/Content/images/user.png" alt="">
+								}
+								<center>@user.LastName</center>
+							</a></li>
+
+
+						}
+						</ul>
+						<div class="clearfix"></div>
+						<a class="btn btn-primary" href='@Url.Action("FollowedUsers", "User")'>View All</a>
+					</div>
+				</div>
+				<div class="panel panel-default groups">
+					<div class="panel-heading">
+						<h3 class="panel-title">Search for a Post</h3>
+					</div>
+					<div class="panel-body">
+						<div class="group-item">
+							@using (Html.BeginForm("SearchPostWall", "Post", FormMethod.Post))
+							{
+					
+								<input type="search" name="postString" style="padding-right: 10px" />
+
+					
+								<input type="submit" value="Search" />
+
+                    
+					
+							}
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+

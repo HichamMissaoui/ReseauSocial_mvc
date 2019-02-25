@@ -1,0 +1,112 @@
+﻿@model Koombu.Bll.ViewModel.ProfilVm
+
+@{
+	ViewData["Title"] = "Profile Page";
+}
+
+<section>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8">
+				<div class="profile">
+					<h1 class="page-header">@Model.User.FirstName @Model.User.LastName </h1>
+					@if (!ViewData["isConnect"].ToString().Equals("true"))
+					{<div id="Follow">
+							
+								<a class="btn btn-primary" id="btn-Follow" href='@Url.Action("FollowUser", "User", new {id=@Model.User.UserId})'>Follow</a>
+							
+							
+							
+								<a class="btn btn-primary" href='@Url.Action("UnFollowUser", "User", new {id = @Model.User.UserId})'>Unfollow</a>
+							
+						</div>
+					}
+					<div class="row">
+
+						<div class="col-md-4">
+							@if (Model.User.ProfilPicture != null)
+							{
+								<img src="@Url.Content(Model.User.ProfilPicture)" class="img-thumbnail">
+							}
+							else
+							{
+								<img src="~/Content/images/user.png" class="img-thumbnail">
+							}
+
+							@if (ViewData["isConnect"].ToString().Equals("true"))
+							{
+								<center><a class="btn btn-primary disabled" id="btn-Follow" href="#">Change Profil Picture</a></center>
+								using (Html.BeginForm("ProfilPicture", "User",
+									FormMethod.Post, new {enctype = "multipart/form-data"}))
+								{
+
+									<div class="form-group">
+										<input type="hidden" name="userId" value="@Model.User.UserId"/>
+										<input type="file" name="pic"/>
+										<input type="submit" value="Upload"/>
+									</div>
+
+								}
+								
+							}
+							
+						</div>
+
+						<div class="col-md-8">
+							<ul>
+								<li><strong>Name:</strong>@Model.User.FirstName @Model.User.LastName</li>
+								<li><strong>Email:</strong>@Model.User.EmailAdress</li>
+								<li><strong>Title:</strong>@Model.User.Title</li>
+								<li><strong>Department:</strong>@Model.User.Department</li>
+								<li><strong>Date of Birth:</strong>@Model.User.DateOfBirth.ToString("dd'/'MM'/'yyyy")</li>
+
+							</ul>
+						</div>
+					</div><br><br>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-default friends">
+					<div class="panel-heading">
+						<h3 class="panel-title">Followed users</h3>
+					</div>
+					<div class="panel-body">
+						<ul>
+							@foreach (var user in Model.FollowedUsersObjects.Take(9))
+							{
+								<li><a href='@Url.Action("Profil", "User", new {id = @user.UserId})' class="thumbnail">
+								
+									@if (user.ProfilPicture != null)
+									{
+										<img src="@Url.Content(user.ProfilPicture)" alt="@user.FirstName @user.LastName">
+									}
+									else
+									{
+										<img src="~/Content/images/user.png" alt="">
+									}
+									<center>@user.LastName</center>
+								</a></li>
+
+
+							}
+						</ul>
+						<div class="clearfix"></div>
+						<a class="btn btn-primary" href='@Url.Action("FollowedUsers", "User")'>View All</a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</section>
+
+
+

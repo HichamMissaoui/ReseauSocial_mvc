@@ -1,0 +1,97 @@
+﻿@model Koombu.Bll.ViewModel.GroupUsersVm
+@{
+	ViewData["Title"] = "EditGroupUsers";
+}
+
+
+
+
+
+
+
+<section>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8">
+				<div class="members">
+					<h1 class="page-header" align="center">All Users</h1>
+					@foreach (var user in Model.AllUsers)
+					{
+						if (!user.UserId.ToString().Equals(Session["UserId"].ToString()))
+						{
+							<div class="row member-row">
+								<div class="col-md-3">
+									<a href='@Url.Action("Profil", "Home",new { id=@user.UserId})'><img src="@Url.Content(user.ProfilPicture)" class="img-thumbnail" alt=""></a>
+									<div class="text-center">
+										@user.FirstName  @user.LastName
+									</div>
+								</div>
+								<div class="col-md-1">
+									<p><a href="#"><i></i></a></p>
+								</div>
+								<div class="col-md-1">
+									<p><a href="#"><i></i></a></p>
+								</div>
+								@if (!Model.GroupMembersId.Contains(user.UserId))
+								{
+									<div class="col-md-3">
+										<p><a href='@Url.Action("AddUser", "Group",new { groupId=Model.Group.Id,userId=@user.UserId})' class="btn btn-success btn-block"><i class="fa fa-users"></i> Add to group</a></p>
+									</div>
+								}
+							
+								
+								@if (Model.GroupMembersId.Contains(user.UserId))
+								{
+									<div class="col-md-3">
+										<p><a href='@Url.Action("DeleteUser", "Group",new { groupId=Model.Group.Id,userId=@user.UserId})' class="btn btn-primary btn-block"><i class="fa fa-edit"></i> Delete from group</a></p>
+									</div>
+								}
+							
+								<div class="col-md-1">
+									<p><a href="#"><i></i></a></p>
+								</div>
+
+							</div>
+						}
+						
+					}
+
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-default friends">
+					<div class="panel-heading">
+						<h3 class="panel-title">Group Members</h3>
+					</div>
+					<div class="panel-body">
+						<ul>
+							@foreach (var user in Model.GroupMembersObjects)
+							{
+								<li><a href='@Url.Action("Profil", "User", new {id = @user.UserId})' class="thumbnail">
+									@if (user.UserPicture != null)
+									 {
+										 <img src="@Url.Content(user.UserPicture)" >
+									 }
+									 else
+									 {
+										 <img src="~/Content/images/user.png" alt="">
+									 }
+									<center>@user.UserLastName</center>
+								</a></li>
+
+
+							}
+						</ul>
+						<div class="clearfix"></div>
+						<a class="btn btn-primary" href='@Url.Action("GroupMembers", "Group", new {groupId = @Model.Group.Id})'>View All</a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</section>
+
+
+
+

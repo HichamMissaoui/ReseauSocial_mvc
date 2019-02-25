@@ -1,0 +1,105 @@
+﻿@model Koombu.Bll.ViewModel.UsersVm
+@{
+	ViewData["Title"] = "Users";
+}
+
+<section>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8">
+				<div class="members">
+					<h1 class="page-header" align="center">All Users</h1>
+
+					<hr />
+					@foreach (var user in Model.AllUsers)
+					{
+						if (!user.UserId.ToString().Equals(Session["UserId"].ToString()))
+						{
+							<div class="row member-row">
+								<div class="col-md-3">
+									<a href='@Url.Action("Profil", "User", new {id = @user.UserId})'>
+										@if (user.ProfilPicture != null)
+										{
+											<img src="@Url.Content(user.ProfilPicture)" alt="@user.FirstName @user.LastName" class="img-thumbnail">
+										}
+										else
+										{
+											<img src="~/Content/images/user.png" class="img-thumbnail">
+										}
+									</a>
+									<div class="text-center">
+										@user.FirstName  @user.LastName
+									</div>
+								</div>
+								<div class="col-md-1">
+									<p><a href="#"><i></i></a></p>
+								</div>
+								
+								<div class="col-md-3">
+									<p><a href='@Url.Action("Profil", "User",new { id=@user.UserId})' class="btn btn-primary btn-block"><i class="fa fa-edit"></i> View Profile</a></p>
+								</div>
+								<div class="col-md-8">
+									<p><a href="#"><i></i></a></p>
+								</div>
+
+							</div>
+						}
+						}
+						
+
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-default friends">
+					<div class="panel-heading">
+						<h3 class="panel-title">Followed users</h3>
+					</div>
+					<div class="panel-body">
+						<ul>
+							@foreach (var user in Model.FollowedUsersObjects.Take(9))
+							{
+								<li><a href='@Url.Action("Profil", "User", new {id = @user.UserId})' class="thumbnail">
+								
+									@if (user.ProfilPicture != null)
+									{
+										<img src="@Url.Content(user.ProfilPicture)" alt="@user.FirstName @user.LastName">
+									}
+									else
+									{
+										<img src="~/Content/images/user.png" alt="">
+									}
+									<center>@user.LastName</center>
+								</a></li>
+
+
+							}
+						</ul>
+						<div class="clearfix"></div>
+						<a class="btn btn-primary" href='@Url.Action("FollowedUsers", "Home")'>View All</a>
+					</div>
+				</div>
+				<div class="panel panel-default groups">
+					<div class="panel-heading">
+						<h3 class="panel-title">Search for a User</h3>
+					</div>
+					<div class="panel-body">
+						<div class="group-item">
+							@using (Html.BeginForm("SearchUser", "User", FormMethod.Post))
+							{
+
+								<input type="search" name="userName" style="padding-right: 10px" />
+
+
+								<input type="submit" value="Search" />
+
+
+
+							}
+						</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</section>
+
